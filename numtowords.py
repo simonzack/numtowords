@@ -137,14 +137,18 @@ def num2eng(num):
 	pron.reverse()
 	return ', '.join(pron)
 
-if __name__ == '__main__':
-	from sys import argv, exit
-	from os.path import basename
-	if len(argv) < 2:
-		print('usage: %s NUMBER[s]' % basename(argv[0]))
-		exit(1)
-	for n in argv[1:]:
+
+def main():
+	import argparse
+	from sys import exit
+	argParser=argparse.ArgumentParser(description=__doc__)
+	argParser.add_argument('nums',type=int,nargs='+')
+	args=argParser.parse_args()
+	for n in args.nums:
 		try:
 			print(num2eng(n))
 		except ValueError as e:
-			print('Error: %s' % e)
+			print('Error: %s' % e)	
+
+if __name__ == '__main__':
+	main()
