@@ -5,12 +5,7 @@ $./num2eng.py 1411893848129211
 one quadrillion, four hundred and eleven trillion, eight hundred and ninety 
 three billion, eight hundred and forty eight million, one hundred and twenty 
 nine thousand, two hundred and eleven
-$
-
-Algorithm from http://mini.net/tcl/591
 '''
-
-# modified to exclude the "and" between hundreds and tens - mld
 
 import math
 
