@@ -148,7 +148,7 @@ def main():
 		try:
 			print(num2eng(n))
 		except ValueError as e:
-			print('Error: %s' % e)	
+			print('Error: {}'.format(e))	
 
 if __name__ == '__main__':
 	main()
