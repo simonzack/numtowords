@@ -140,11 +140,13 @@ class NumBaseEngStringifier:
 	def stringify(self,power):
 		if power<0 or power%3!=0:
 			raise ValueError('power')
+		elif power==0:
+			return ''
 		return self._getPrefix(power)+self.suffix
 
 
 class NumBaseMaxEngStringifier(NumBaseEngStringifier):
-	def __init__(self,useStandardPrefs=True,maxPower=None):
+	def __init__(self,maxPower,useStandardPrefs=True):
 		'''
 		args:
 			maxPower:
@@ -154,11 +156,18 @@ class NumBaseMaxEngStringifier(NumBaseEngStringifier):
 		super().__init__(useStandardPrefs)
 		if maxPower<0 or maxPower%3!=0:
 			raise ValueError('maxPower')
-		self.maxBaseNum=self._powerToBaseNum(maxPower)
+		self.maxPower=maxPower
+		self.maxPowerStr=super().stringify(self.maxPower)
 
-	def _getPrefixBase(self,base):
-		#XXX
-		pass
+	def stringify(self,power):
+		curPower=power%self.maxPower
+		maxPowerNum=power//self.maxPower
+		if curPower==0:
+			tokens=[]
+		else:
+			tokens=[super().stringify(curPower)]
+		tokens.extend([self.maxPowerStr]*maxPowerNum)
+		return ' '.join(tokens)
 
 
 class NumEngStringifier:

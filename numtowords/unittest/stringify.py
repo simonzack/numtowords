@@ -9,6 +9,7 @@ class TestNumBaseEngStringifier(unittest.TestCase):
 	def testStringifyBase(self):
 		#most from wikipedia
 		baseStrs={
+			0:				'',
 			6: 				'million',
 			9: 				'billion',
 			12: 			'trillion',
@@ -82,6 +83,19 @@ class TestNumBaseEngStringifier(unittest.TestCase):
 		}
 		for key,val in baseStrs.items():
 			self.assertEquals(val,self.stringifier.stringify(key))
+
+	def testGetPrefixBase(self):
+		self.assertEquals('',self.stringifier._getPrefixBase(0))
+
+
+class TestNumBaseMaxEngStringifier(unittest.TestCase):
+	def setUp(self):
+		self.stringifier=NumBaseMaxEngStringifier(9,useStandardPrefs=False)
+
+	def testStringifyBase(self):
+		self.assertEquals('',self.stringifier.stringify(0))
+		self.assertEquals('million billion',self.stringifier.stringify(15))
+		self.assertEquals('billion billion',self.stringifier.stringify(18))
 
 
 class TestNumEngStrinfier(unittest.TestCase):
