@@ -112,6 +112,7 @@ class NumEngBaseStringifier:
 
 
 class NumEngStringifier:
+	pass
 	##tokens <=90
 	#_SMALL = {
 	#	'0' : '',
@@ -143,11 +144,11 @@ class NumEngStringifier:
 	#	'80' : 'eighty',
 	#	'90' : 'ninety'
 	#}
-#
+	#
 	#def get_num(num):
 	#	'''Get token <= 90, return '' if not matched'''
 	#	return _SMALL.get(num, '')
-#
+	#
 	#def triplets(l):
 	#	'''Split list to triplets. Pad last one with '' if needed'''
 	#	res = []
@@ -157,7 +158,7 @@ class NumEngStringifier:
 	#			sect += [''] * (3 - len(sect))
 	#		res.append(sect)
 	#	return res
-#
+	#
 	#def norm_num(num):
 	#	"""Normelize number (remove 0's prefix). Return number and string"""
 	#	n = int(num)
@@ -191,10 +192,10 @@ class NumEngStringifier:
 	#	num = str(num) # Convert to string, throw if bad number
 	#	if (len(num) / 3 >= len(_PRONOUNCE)): # Sanity check
 	#		raise ValueError('Number too big')
-#
+	#
 	#	if num == '0': # Zero is a special case
 	#		return 'zero'
-#
+	#
 	#	# Create reversed list
 	#	x = list(num)
 	#	x.reverse()
