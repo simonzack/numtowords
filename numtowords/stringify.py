@@ -2,41 +2,56 @@
 import math
 
 class NumBaseEngStringifier:
+	'''
+	for larger powers the naming used is the one by John Horton Conway/Richard Kenneth Guy/Allan Wechsler,
+		an extension of the standard dictionary numbers (see wikipedia)
+
+	this system is designed to represent 10**n
+		the power, n, is divided by 3 (since the usual bases, thousand, million, billion go up in powers of 3)
+		the power is then split up into chunks of 3 digits
+	each chunk is then split into units, tens, hundreds:
+		a reverse prefix order is used: units, tens, hundreds
+		when preceding a component marked s or x, "tre" increases to "tres" and "se" to "ses" or "sex"
+		when preceding a component marked m or n, "septe" and "nove" increase to "septem" and "novem" or "septen" and "noven"
+		e.g. tre-viginti becomes tre-s-viginti, as 's' and 'ms' share 's'
+	if a chunk is 0, then a placeholder, 'nilli' is used
+	all the chunks are then concacted together, from the highest power to the lowest power
+
+	alternative naming schemes:
+		Landon Curt Noll:
+			http://www.isthe.com/chongo/tech/math/number/howhigh.html
+	'''
+
+	def __init__(self,useStandardPrefs=True):
+		self.useStandardPrefixes=useStandardPrefs
+
 	#only used for powers 6-33 (i.e. the smallest) for every 3000 increase in power
-	smallPrefixes=['','m','b','tr','quadr','quint','sext','sept','oct','non','dec']
+	smallPrefixes=['','mi','bi','tri','quadri','quinti','sexti','septi','octi','noni','deci']
+
+	#dictionary definitions which might have conflicts with the naming system
+	standardPrefixes={
+		48:		'quindeci',
+		51:		'sexdeci',
+		60:		'novemdeci',
+	}
 
 	infix='illi'
 	suffix='on'
 
-	#for larger powers the representation used is the one by Landon Curt Noll/John Horton Conway/Richard Kenneth Guy/Allan Wechsler,
-	#	an extension of the standard dictionary numbers (see wikipedia)
-
-	#this system is designed to represent 10**n
-	#	the power, n, is divided by 3 (since the usual bases, thousand, million, billion go up in powers of 3)
-	#	the power is then split up into chunks of 3 digits
-	#each chunk is then split into units, tens, hundreds:
-	#	a reverse prefix order is used: units, tens, hundreds
-	#	if the prefix B (a ten or a hundred), following a unit, A, starts with a character in B's rule,
-	#		then whatever char A's rule and B's rule
-	#		share is added to A
-	#	e.g. tre-viginti becomes tre-s-viginti, as 's' and 'ms' share 's'
-	#if a chunk is 0, then a placeholder, 'nilli' is used
-	#all the chunks are then concacted together, from the highest power to the lowest power
-
-	placeholderInfix='nilli'
+	placeholderInfix='ni'
 
 	#the second tuple elements are the rules
 	units=[
-		('',None),
-		('un',None),
-		('duo',None),
-		('tre','s'),
-		('quattuor',None),
-		('quinqua',None),
-		('se','sx'),
-		('septe','mn'),
-		('octo',None),
-		('nove','mn')
+		'',
+		'un',
+		'duo',
+		'tre',
+		'quattuor',
+		'quinqua',
+		'se',
+		'septe',
+		'octo',
+		'nove',
 	]
 	tens=[
 		('',None),
@@ -64,51 +79,70 @@ class NumBaseEngStringifier:
 	]
 
 	@staticmethod
-	def _getUnitSuffix(unitsSufRule,thRule):
+	def _powerToBaseNum(power):
+		#-1 since the smallest prefix is million, which is 10**6, and the largest prefix is decillion, whic his 10**33
+		return power//3-1
+
+	@staticmethod
+	def _baseNumToPower(base):
+		return (base+1)*3
+
+	@staticmethod
+	def _getUnitSuffix(unitNum,thRule):
 		'''
 		get the suffix of the unit, given the ten rule or hundred rule (if the ten rule is not present)
 		'''
-		return next(iter(set(unitsSufRule).intersection(thRule)))
+		#	when preceding a component marked s or x, "tre" increases to "tres" and "se" to "ses" or "sex"
+		#	when preceding a component marked m or n, "septe" and "nove" increase to "septem" and "novem" or "septen" and "noven"
+		if unitNum==3 and ('s' in thRule or 'x' in thRule):
+			return 's'
+		elif unitNum==6:
+			if 's' in thRule:
+				return 's'
+			if 'x' in thRule:
+				return 'x'
+		elif unitNum in (7,9):
+			if 'm' in thRule:
+				return 'm'
+			if 'n' in thRule:
+				return 'n'
+		return ''
 
-	@classmethod
-	def _getPrefixRaw(cls,power):
-		curPower=power%1000
-		prefPower=power//1000
-		prefix=cls._getPrefixRaw(prefPower) if prefPower>0 else ''
-		if curPower==0:
+	def _getPrefixBase(self,base):
+		curBase=base%1000
+		prefBase=base//1000
+		prefix=self._getPrefixBase(prefBase) if prefBase>0 else ''
+		if curBase==0:
 			if prefix:
-				return prefix+cls.placeholderInfix
+				res=self.placeholderInfix
 			else:
 				return ''
-		elif 1<=curPower<=10:
-			return prefix+cls.smallPrefixes[curPower-1]
+		elif 1<=curBase<=10:
+			res=self.smallPrefixes[curBase]
+		elif self.useStandardPrefixes and self._baseNumToPower(curBase) in self.standardPrefixes:
+			res=self.standardPrefixes[self._baseNumToPower(curBase)]
 		else:
-			hundredsNum=curPower//100
-			tensNum=(curPower//10)%10
-			unitsNum=curPower%10
-			(hundredsPrefix,hundredsRule)=cls.hundreds[hundredsNum]
-			(tensPrefix,tensRule)=cls.tens[tensNum]
-			(unitsPrefix,unitsSufRule)=cls.units[unitsNum]
-			if tensRule:
-				unitsPrefix+=cls._getUnitSuffix(unitsSufRule,tensRule)
-			elif hundredsRule:
-				unitsPrefix+=cls._getUnitSuffix(unitsSufRule,hundredsRule)
-			return unitsPrefix+tensPrefix+hundredsPrefix
+			hundredNum=curBase//100
+			tenNum=(curBase//10)%10
+			unitNum=curBase%10
+			(hundredPrefix,hundredRule)=self.hundreds[hundredNum]
+			(tenPrefix,tenRule)=self.tens[tenNum]
+			unitPrefix=self.units[unitNum]
+			if tenRule:
+				unitPrefix+=self._getUnitSuffix(unitNum,tenRule)
+			elif hundredRule:
+				unitPrefix+=self._getUnitSuffix(unitNum,hundredRule)
+			res=unitPrefix+tenPrefix+hundredPrefix
+		#change 'a' to 'i' if res ends with 'a'
+		return prefix+res[:-1]+self.infix
 
-	@classmethod
-	def _getPrefix(cls,power):
-		#-1 since the smallest prefix is million, which is 10**6, and the largest prefix is decillion, whic his 10**33
-		return cls._getPrefixRaw(power//3-1)
+	def _getPrefix(self,power):
+		return self._getPrefixBase(self._powerToBaseNum(power))
 
-	@classmethod
-	def _getBase(cls,power):
+	def stringify(self,power):
 		if power<0 or power%3!=0:
 			raise ValueError('power')
-		return cls._getPrefix(power)+cls.suffix
-
-	@classmethod
-	def stringify(cls,power):
-		return cls._getBase(power)
+		return self._getPrefix(power)+self.suffix
 
 
 class NumEngStringifier:
