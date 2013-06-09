@@ -92,8 +92,6 @@ class NumBaseEngStringifier:
 		'''
 		get the suffix of the unit, given the ten rule or hundred rule (if the ten rule is not present)
 		'''
-		#	when preceding a component marked s or x, "tre" increases to "tres" and "se" to "ses" or "sex"
-		#	when preceding a component marked m or n, "septe" and "nove" increase to "septem" and "novem" or "septen" and "noven"
 		if unitNum==3 and ('s' in thRule or 'x' in thRule):
 			return 's'
 		elif unitNum==6:
@@ -145,8 +143,28 @@ class NumBaseEngStringifier:
 		return self._getPrefix(power)+self.suffix
 
 
+class NumBaseMaxEngStringifier(NumBaseEngStringifier):
+	def __init__(self,useStandardPrefs=True,maxPower=None):
+		'''
+		args:
+			maxPower:
+				maximum power word representation used, e.g. if maxPower==9,
+					'billion billion' will be used instead to represent 10**18,
+		'''
+		super().__init__(useStandardPrefs)
+		if maxPower<0 or maxPower%3!=0:
+			raise ValueError('maxPower')
+		self.maxBaseNum=self._powerToBaseNum(maxPower)
+
+	def _getPrefixBase(self,base):
+		#XXX
+		pass
+
+
 class NumEngStringifier:
-	pass
+	def __init__(self,numBaseStringifier):
+		self.numBaseStringifier=numBaseStringifier
+
 	##tokens <=90
 	#_SMALL = {
 	#	'0' : '',
