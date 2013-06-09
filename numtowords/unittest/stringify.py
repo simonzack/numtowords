@@ -2,10 +2,10 @@
 import unittest
 from ..stringify import *
 
-class TestNumEngBaseStringifier(unittest.TestCase):
+class TestNumBaseEngStringifier(unittest.TestCase):
 	def testStringifyBase(self):
-		self.assertEquals(NumEngStringifier.stringify(3000012),'millinillitrillion')
-		self.assertEquals
+		self.assertEquals(NumBaseEngStringifier.stringify(3000012),'millinillitrillion')
+		self.assertEquals(NumBaseEngStringifier.stringify(9999999999),'tremilliamilliamilliatrecentretriginmilliamilliatrecentretriginmilliatrecendotrigintillion')
 
 class TestNumEngStrinfier(unittest.TestCase):
 	pass

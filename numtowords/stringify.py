@@ -1,7 +1,7 @@
 
 import math
 
-class NumEngBaseStringifier:
+class NumBaseEngStringifier:
 	#only used for powers 6-33 (i.e. the smallest) for every 3000 increase in power
 	smallPrefixes=['','m','b','tr','quadr','quint','sext','sept','oct','non','dec']
 
