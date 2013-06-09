@@ -1,6 +1,6 @@
 
 import unittest
-from ..stringify import *
+from numtowords.stringify import *
 
 class TestNumBaseEngStringifier(unittest.TestCase):
 	def testStringifyBase(self):
