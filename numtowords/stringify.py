@@ -1,6 +1,4 @@
 
-import math
-
 class NumBaseEngStringifier:
 	'''
 	for larger powers the naming used is the one by John Horton Conway/Richard Kenneth Guy/Allan Wechsler,
@@ -24,6 +22,8 @@ class NumBaseEngStringifier:
 
 	def __init__(self,useStandardPrefs=True):
 		self.useStandardPrefixes=useStandardPrefs
+
+	thousand='thousand'
 
 	#only used for powers 6-33 (i.e. the smallest) for every 3000 increase in power
 	smallPrefixes=['','mi','bi','tri','quadri','quinti','sexti','septi','octi','noni','deci']
@@ -142,6 +142,8 @@ class NumBaseEngStringifier:
 			raise ValueError('power')
 		elif power==0:
 			return ''
+		elif power==3:
+			return self.thousand
 		return self._getPrefix(power)+self.suffix
 
 
@@ -171,103 +173,64 @@ class NumBaseMaxEngStringifier(NumBaseEngStringifier):
 
 
 class NumEngStringifier:
-	def __init__(self,numBaseStringifier):
+	'''
+	use of 'and':
+		american english does not use 'and' anywhere (see wikitionary)
+	'''
+	def __init__(self,numBaseStringifier,british=False):
 		self.numBaseStringifier=numBaseStringifier
+		self.british=british
 
-	##tokens <=90
-	#_SMALL = {
-	#	'0' : '',
-	#	'1' : 'one',
-	#	'2' : 'two',
-	#	'3' : 'three',
-	#	'4' : 'four',
-	#	'5' : 'five',
-	#	'6' : 'six',
-	#	'7' : 'seven',
-	#	'8' : 'eight',
-	#	'9' : 'nine',
-	#	'10' : 'ten',
-	#	'11' : 'eleven',
-	#	'12' : 'twelve',
-	#	'13' : 'thirteen',
-	#	'14' : 'fourteen',
-	#	'15' : 'fifteen',
-	#	'16' : 'sixteen',
-	#	'17' : 'seventeen',
-	#	'18' : 'eighteen',
-	#	'19' : 'nineteen',
-	#	'20' : 'twenty',
-	#	'30' : 'thirty',
-	#	'40' : 'forty',
-	#	'50' : 'fifty',
-	#	'60' : 'sixty',
-	#	'70' : 'seventy',
-	#	'80' : 'eighty',
-	#	'90' : 'ninety'
-	#}
-	#
-	#def get_num(num):
-	#	'''Get token <= 90, return '' if not matched'''
-	#	return _SMALL.get(num, '')
-	#
-	#def triplets(l):
-	#	'''Split list to triplets. Pad last one with '' if needed'''
-	#	res = []
-	#	for i in range(int(math.ceil(len(l) / 3.0))):
-	#		sect = l[i * 3 : (i + 1) * 3]
-	#		if len(sect) < 3: # Pad last section
-	#			sect += [''] * (3 - len(sect))
-	#		res.append(sect)
-	#	return res
-	#
-	#def norm_num(num):
-	#	"""Normelize number (remove 0's prefix). Return number and string"""
-	#	n = int(num)
-	#	return n, str(n)
-	#
-	#@classmethod
-	#def stringifyPart(num):
-	#	'''English representation of a number <= 999'''
-	#	n, num = norm_num(num)
-	#	hundred = ''
-	#	ten = ''
-	#	if len(num) == 3: # Got hundreds
-	#		hundred = get_num(num[0]) + ' hundred'
-	#		num = num[1:]
-	#		n, num = norm_num(num)
-	#	if (n > 20) and (n != (n / 10 * 10)): # Got ones
-	#		tens = get_num(num[0] + '0')
-	#		ones = get_num(num[1])
-	#		ten = tens + ' ' + ones
-	#	else:
-	#		ten = get_num(num)
-	#	if hundred and ten:
-	#		return hundred + ' ' + ten
-	#		#return hundred + ' and ' + ten
-	#	else: # One of the below is empty
-	#		return hundred + ten
-	#
-	#@classmethod
-	#def stringify(cls,num):
-	#	'''English representation of a number'''
-	#	num = str(num) # Convert to string, throw if bad number
-	#	if (len(num) / 3 >= len(_PRONOUNCE)): # Sanity check
-	#		raise ValueError('Number too big')
-	#
-	#	if num == '0': # Zero is a special case
-	#		return 'zero'
-	#
-	#	# Create reversed list
-	#	x = list(num)
-	#	x.reverse()
-	#	pron = [] # Result accumolator
-	#	ct = len(_PRONOUNCE) - 1 # Current index
-	#	for a, b, c in triplets(x): # Work on triplets
-	#		p = cls.stringifyPart(c + b + a)
-	#		if p:
-	#			pron.append(p + ' ' + _PRONOUNCE[ct])
-	#		ct -= 1
-	#	# Create result
-	#	pron.reverse()
-	#	return ', '.join(pron)
+	units=['','one','two','three','four','five','six','seven','eight','nine']
+	tenUnits=['ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen']
+	tens=['','ten','twenty','thirty','fourty','fifty','sixty','seventy','eighty','ninety']
+	hundred='hundred'
+	thousand='thousand'
+	infix='and'
 
+	def stringifyComponent(self,n):
+		hundredRem=n%100
+		hundredNum=n//100
+		res=[]
+		if hundredNum!=0:
+			res.extend([self.units[hundredNum],self.hundred])
+		if hundredRem!=0:
+			if res and self.british:
+				res.append(self.infix)
+			if hundredRem<20:
+				if hundredRem<10:
+					res.append(self.units[hundredRem])
+				else:
+					res.append(self.tenUnits[hundredRem-10])
+			else:
+				unitNum=hundredRem%10
+				tenNum=hundredRem//10
+				tenRes=[]
+				if tenNum!=0:
+					tenRes.append(self.tens[tenNum])
+				if unitNum!=0:
+					tenRes.append(self.units[unitNum])
+				res.append('-'.join(tenRes))
+		return ' '.join(res)
+
+	def stringify(self,n):
+		res=[]
+		curPow=0
+		nRem=n%1000
+		while True:
+			rem=n%1000
+			quot=n//1000
+			curRes=[]
+			if rem!=0:
+				curRes.append(self.stringifyComponent(rem))
+				if curPow>0:
+					curRes.append(self.numBaseStringifier.stringify(curPow))
+				if self.british and curPow==3 and nRem!=0:
+					curRes.append(self.infix)
+				res.append(' '.join(curRes))
+			if quot==0:
+				break
+			n=quot
+			curPow+=3
+
+		return ' '.join(reversed(res))
