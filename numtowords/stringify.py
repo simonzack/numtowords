@@ -182,7 +182,7 @@ class PosIntEngStringifier:
 		american english does not use 'and' anywhere (see wikitionary)
 		nobody does this, but not enforcing this also might introduces ambiguity which isn't resolved
 	'''
-	def __init__(self,numBaseStringifier,british=False,commas=True):
+	def __init__(self,numBaseStringifier,british=True,commas=True):
 		self.numBaseStringifier=numBaseStringifier
 		self.british=british
 		self.commas=commas
