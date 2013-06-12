@@ -101,10 +101,16 @@ class TestNumBaseMaxEngStringifier(unittest.TestCase):
 
 class TestNumEngStrinfier(unittest.TestCase):
 	def setUp(self):
-		self.baseStringifier=NumBaseMaxEngStringifier(9,useStandardPrefs=False)
+		self.baseStringifier=NumBaseEngStringifier(useStandardPrefs=False)
 		self.stringifier=NumEngStringifier(self.baseStringifier,british=True)
 
 	def testStrinfiy(self):
+		'''
+		test sources:
+			http://english.stackexchange.com/questions/71770/usage-of-and-and-comma-when-writing-numbers-uk-style
+			http://english.stackexchange.com/questions/97755/when-writing-out-large-numbers-in-words-should-commas-be-placed-at-thousand-sep
+			http://english.stackexchange.com/questions/116236/placement-of-commas-and-and-in-english-numerals
+		'''
 		numStrs={
 			21:			'twenty-one',
 			25:			'twenty-five',
@@ -115,19 +121,10 @@ class TestNumEngStrinfier(unittest.TestCase):
 			83:			'eighty-three',
 			99:			'ninety-nine',
 			100: 		'one hundred',
-			101:		'one hundred and one',
-			109:		'one hundred and nine',
-			110:		'one hundred and ten',
-			120:		'one hundred and twenty',
-			152:		'one hundred and fifty-two',
-			208:		'two hundred and eight',
-			334:		'three hundred and thirty-four',
 			200: 		'two hundred',
 			900: 		'nine hundred',
-			999:		'nine hundred and ninety-nine',
 			1000: 		'one thousand',
-			1012:		'one thousand and twelve',
-			1024:		'one thousand and twenty-four',
+			1203:		'one thousand, two hundred and three',
 			2000: 		'two thousand',
 			10000: 		'ten thousand',
 			11000: 		'eleven thousand',
@@ -136,9 +133,43 @@ class TestNumEngStrinfier(unittest.TestCase):
 			30000: 		'thirty thousand',
 			85000: 		'eighty-five thousand',
 			100000: 	'one hundred thousand',
+			100101:		'one hundred thousand, one hundred and one',
+			102304:		'one hundred and two thousand, three hundred and four',
 			999000: 	'nine hundred and ninety-nine thousand',
+			987654:		'nine hundred and eighty-seven thousand, six hundred and fifty-four',
 			1000000: 	'one million',
+			1000200:	'one million, two hundred',
+			1002000:	'one million, two thousand',
+			1002003:	'one million, two thousand and three',
+			1023045:	'one million, twenty-three thousand and forty-five',
+			1203450:	'one million, two hundred and three thousand, four hundred and fifty',
+			5629296:	'five million, six hundred and twenty-nine thousand, two hundred and ninety-six',
 			10000000: 	'ten million',
+			12345678:	'twelve million, three hundred and forty-five thousand, six hundred and seventy-eight',
+			100000300:	'one hundred million, three hundred',
+			102304567:	'one hundred and two million, three hundred and four thousand, five hundred and sixty-seven',
+
+			#last block has an 'and' prefix
+			101:		'one hundred and one',
+			102:		'one hundred and two',
+			109:		'one hundred and nine',
+			110:		'one hundred and ten',
+			120:		'one hundred and twenty',
+			152:		'one hundred and fifty-two',
+			208:		'two hundred and eight',
+			334:		'three hundred and thirty-four',
+			999:		'nine hundred and ninety-nine',
+			1001:		'one thousand and one',
+			1002:		'one thousand and two',
+			1012:		'one thousand and twelve',
+			1024:		'one thousand and twenty-four',
+			1000002:	'one million and two',
+			1000020:	'one million and twenty',
+
+			#comma before the last 'and'
+			101024:		'one hundred and one thousand, and twenty-four',
+			102003:		'one hundred and two thousand, and three',
+			102000003:	'one hundred and two million, and three',
 		}
 		for n,s in numStrs.items():
 			self.assertEquals(s,self.stringifier.stringify(n))

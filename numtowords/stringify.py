@@ -176,19 +176,21 @@ class NumEngStringifier:
 	'''
 	use of 'and':
 		american english does not use 'and' anywhere (see wikitionary)
+		nobody does this, but not enforcing this also might introduces ambiguity which isn't resolved
 	'''
-	def __init__(self,numBaseStringifier,british=False):
+	def __init__(self,numBaseStringifier,british=False,commas=True):
 		self.numBaseStringifier=numBaseStringifier
 		self.british=british
+		self.commas=commas
 
 	units=['','one','two','three','four','five','six','seven','eight','nine']
 	tenUnits=['ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen']
-	tens=['','ten','twenty','thirty','fourty','fifty','sixty','seventy','eighty','ninety']
+	tens=['','ten','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety']
 	hundred='hundred'
 	thousand='thousand'
 	infix='and'
 
-	def stringifyComponent(self,n):
+	def stringifyBlockCoeff(self,n):
 		hundredRem=n%100
 		hundredNum=n//100
 		res=[]
@@ -214,23 +216,62 @@ class NumEngStringifier:
 		return ' '.join(res)
 
 	def stringify(self,n):
+		'''
+		algorithm (british):
+			stringify is done in base 1000, call each digit in base 1000 a block
+			for each block, an 'and' is inserted if the coefficient of 10 is 0
+				e.g. 'one hundred and two'
+			each block is stringified by concatenating the digit and the power
+				e.g. 'one hundred and two', 'million'
+			blocks with 0-value are skipped
+			if there's more than 1 block, and the last block has no 'and', then an 'and' is inserted before the last block
+				e.g. 'one million and two'
+			if the last block has an 'and' prefix, and the second last non-zero block has an 'and'
+				then a comma is inserted before the last block's 'and'
+				e.g. 'one hundred and two thousand, and three', but not 'one hundred and two thousand, one hundred and one'
+
+		algorithm (american):
+			this is just the algorithm for british nuemrals being stripped of 'and's
+		'''
 		res=[]
 		curPow=0
-		nRem=n%1000
+		blockCoeffs=[]
+		blockCoeffsNonZero=[]
 		while True:
 			rem=n%1000
 			quot=n//1000
-			curRes=[]
+			blockRes=[]
+			if len(blockCoeffs)<2:
+				blockCoeffs.append(rem)
 			if rem!=0:
-				curRes.append(self.stringifyComponent(rem))
+				if len(blockCoeffsNonZero)<2:
+					blockCoeffsNonZero.append(rem)
+				#stringify the digit in base 1000
+				blockRes.append(self.stringifyBlockCoeff(rem))
 				if curPow>0:
-					curRes.append(self.numBaseStringifier.stringify(curPow))
-				if self.british and curPow==3 and nRem!=0:
-					curRes.append(self.infix)
-				res.append(' '.join(curRes))
+					#concatenate power
+					blockRes.append(self.numBaseStringifier.stringify(curPow))
+				res.append(' '.join(blockRes))
 			if quot==0:
 				break
 			n=quot
 			curPow+=3
+		if self.british:
+			try:
+				#there's more than 1 block, and the last block has no 'and'
+				if 0<blockCoeffs[0]<100 and blockCoeffs[1] is not None:
+					res[0]=self.infix+' '+res[0]
+					if self.commas:
+						#the last block has an 'and' prefix, and the second last non-zero block has an 'and'
+						#remove the comma by merging
+						if 0<blockCoeffs[0]<100 and 0<blockCoeffsNonZero[1]<100:
+							res0=res.pop(0)
+							res1=res.pop(0)
+							res.insert(0,'{} {}'.format(res1,res0))
+			except IndexError:
+				pass
 
-		return ' '.join(reversed(res))
+		if self.commas:
+			return ', '.join(reversed(res))
+		else:
+			return ' '.join(reversed(res))
