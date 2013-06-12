@@ -9,7 +9,7 @@ from numtowords.stringify import *
 def main():
 	argParser=argparse.ArgumentParser(description=__doc__)
 	argParser.add_argument('nums',type=int,nargs='+')
-	argParser.add_argument('--format',choices=['american','british'])
+	argParser.add_argument('--format',choices=['american','british'],default='british')
 	argParser.add_argument('--basemaxpower',default=None)
 	argParser.add_argument('--basestandardprefs',default=None)
 	argParser.add_argument('--commas',default=True)
