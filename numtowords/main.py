@@ -1,10 +1,6 @@
 
 '''
 Convert number to English words
-$ num2eng.py 1411893848129211
-one quadrillion, four hundred and eleven trillion, eight hundred and ninety
-three billion, eight hundred and forty eight million, one hundred and twenty
-nine thousand, two hundred and eleven
 '''
 
 import argparse
