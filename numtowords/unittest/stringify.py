@@ -2,14 +2,13 @@
 import unittest
 from numtowords.stringify import *
 
-class TestNumBaseEngStringifier(unittest.TestCase):
+class TestPosIntBaseEngStringifier(unittest.TestCase):
 	def setUp(self):
-		self.stringifier=NumBaseEngStringifier(useStandardPrefs=False)
+		self.stringifier=PosIntBaseEngStringifier(useStandardPrefs=False)
 
 	def testStringifyBase(self):
 		#most from wikipedia
 		baseStrs={
-			0:				'',
 			3:				'thousand',
 			6: 				'million',
 			9: 				'billion',
@@ -85,24 +84,26 @@ class TestNumBaseEngStringifier(unittest.TestCase):
 		for key,val in baseStrs.items():
 			self.assertEquals(val,self.stringifier.stringify(key))
 
+		with self.assertRaises(ValueError):
+			self.stringifier.stringify(0)
+
 	def testGetPrefixBase(self):
-		self.assertEquals('',self.stringifier._getPrefixBase(0))
+		self.assertEquals('',self.stringifier._getPrefixFromBase(0))
 
 
-class TestNumBaseMaxEngStringifier(unittest.TestCase):
+class TestPosIntBaseMaxEngStringifier(unittest.TestCase):
 	def setUp(self):
-		self.stringifier=NumBaseMaxEngStringifier(9,useStandardPrefs=False)
+		self.stringifier=PosIntBaseMaxEngStringifier(9,useStandardPrefs=False)
 
 	def testStringifyBase(self):
-		self.assertEquals('',self.stringifier.stringify(0))
 		self.assertEquals('million billion',self.stringifier.stringify(15))
 		self.assertEquals('billion billion',self.stringifier.stringify(18))
 
 
-class TestNumEngStrinfier(unittest.TestCase):
+class TestPosIntEngStrinfier(unittest.TestCase):
 	def setUp(self):
-		self.baseStringifier=NumBaseEngStringifier(useStandardPrefs=False)
-		self.stringifier=NumEngStringifier(self.baseStringifier,british=True)
+		self.baseStringifier=PosIntBaseEngStringifier(useStandardPrefs=False)
+		self.stringifier=PosIntEngStringifier(self.baseStringifier,british=True)
 
 	def testStrinfiy(self):
 		'''
@@ -173,4 +174,7 @@ class TestNumEngStrinfier(unittest.TestCase):
 		}
 		for n,s in numStrs.items():
 			self.assertEquals(s,self.stringifier.stringify(n))
+
+		with self.assertRaises(ValueError):
+			self.stringifier.stringify(0)
 

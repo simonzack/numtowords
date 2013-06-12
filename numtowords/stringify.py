@@ -1,5 +1,5 @@
 
-class NumBaseEngStringifier:
+class PosIntBaseEngStringifier:
 	'''
 	for larger powers the naming used is the one by John Horton Conway/Richard Kenneth Guy/Allan Wechsler,
 		an extension of the standard dictionary numbers (see wikipedia)
@@ -107,10 +107,10 @@ class NumBaseEngStringifier:
 				return 'n'
 		return ''
 
-	def _getPrefixBase(self,base):
+	def _getPrefixFromBase(self,base):
 		curBase=base%1000
 		prefBase=base//1000
-		prefix=self._getPrefixBase(prefBase) if prefBase>0 else ''
+		prefix=self._getPrefixFromBase(prefBase) if prefBase>0 else ''
 		if curBase==0:
 			if prefix:
 				res=self.placeholderInfix
@@ -135,20 +135,21 @@ class NumBaseEngStringifier:
 		#change 'a' to 'i' if res ends with 'a'
 		return prefix+res[:-1]+self.infix
 
-	def _getPrefix(self,power):
-		return self._getPrefixBase(self._powerToBaseNum(power))
+	def _getPrefixFromPower(self,power):
+		return self._getPrefixFromBase(self._powerToBaseNum(power))
+
+	def isPowerValid(self,power):
+		return isinstance(power,int) and power>0 and power%3==0
 
 	def stringify(self,power):
-		if power<0 or power%3!=0:
+		if not self.isPowerValid(power):
 			raise ValueError('power')
-		elif power==0:
-			return ''
-		elif power==3:
+		if power==3:
 			return self.thousand
-		return self._getPrefix(power)+self.suffix
+		return self._getPrefixFromPower(power)+self.suffix
 
 
-class NumBaseMaxEngStringifier(NumBaseEngStringifier):
+class PosIntBaseMaxEngStringifier(PosIntBaseEngStringifier):
 	def __init__(self,maxPower,useStandardPrefs=True):
 		'''
 		args:
@@ -156,13 +157,15 @@ class NumBaseMaxEngStringifier(NumBaseEngStringifier):
 				maximum power word representation used, e.g. if maxPower==9,
 					'billion billion' will be used instead to represent 10**18,
 		'''
-		super().__init__(useStandardPrefs)
-		if maxPower<0 or maxPower%3!=0:
+		if not self.isPowerValid(maxPower) or maxPower==0:
 			raise ValueError('maxPower')
+		super().__init__(useStandardPrefs)
 		self.maxPower=maxPower
 		self.maxPowerStr=super().stringify(self.maxPower)
 
 	def stringify(self,power):
+		if not self.isPowerValid(power):
+			raise ValueError('power')
 		curPower=power%self.maxPower
 		maxPowerNum=power//self.maxPower
 		if curPower==0:
@@ -173,7 +176,7 @@ class NumBaseMaxEngStringifier(NumBaseEngStringifier):
 		return ' '.join(tokens)
 
 
-class NumEngStringifier:
+class PosIntEngStringifier:
 	'''
 	use of 'and':
 		american english does not use 'and' anywhere (see wikitionary)
@@ -191,7 +194,7 @@ class NumEngStringifier:
 	thousand='thousand'
 	infix='and'
 
-	def stringifyBlockCoeff(self,n):
+	def _stringifyBlockCoeff(self,n):
 		hundredRem=n%100
 		hundredNum=n//100
 		res=[]
@@ -216,6 +219,9 @@ class NumEngStringifier:
 				res.append('-'.join(tenRes))
 		return ' '.join(res)
 
+	def isNValid(self,n):
+		return isinstance(n,int) and n>0
+
 	def stringify(self,n):
 		'''
 		algorithm (british):
@@ -234,6 +240,8 @@ class NumEngStringifier:
 		algorithm (american):
 			this is just the algorithm for british nuemrals being stripped of 'and's
 		'''
+		if not self.isNValid(n):
+			raise ValueError('n')
 		res=[]
 		curPow=0
 		blockCoeffs=[]
@@ -248,7 +256,7 @@ class NumEngStringifier:
 				if len(blockCoeffsNonZero)<2:
 					blockCoeffsNonZero.append(rem)
 				#stringify the digit in base 1000
-				blockRes.append(self.stringifyBlockCoeff(rem))
+				blockRes.append(self._stringifyBlockCoeff(rem))
 				if curPow>0:
 					#concatenate power
 					blockRes.append(self.numBaseStringifier.stringify(curPow))

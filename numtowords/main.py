@@ -8,7 +8,7 @@ nine thousand, two hundred and eleven
 '''
 
 import argparse
-from .stringify import NumEngStringifier
+from .stringify import PosIntEngStringifier
 
 def main():
 	argParser=argparse.ArgumentParser(description=__doc__)
@@ -16,7 +16,7 @@ def main():
 	args=argParser.parse_args()
 	for n in args.nums:
 		try:
-			print(NumEngStringifier.stringify(n))
+			print(PosIntEngStringifier.stringify(n))
 		except ValueError as e:
 			print('Error: {}'.format(e))	
 
