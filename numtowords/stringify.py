@@ -290,11 +290,14 @@ class IntEngStringifier(PosIntEngStringifier):
 	zero='zero'
 	negative='negative'
 
+	def isNValid(self,n):
+		return isinstance(n,int)
+
 	def stringify(self,n):
 		if n==0:
 			return self.zero
 		elif n<0:
-			return self.negative+super().stringify(n)
+			return '{} {}'.format(self.negative,super().stringify(-n))
 		else:
 			return super().stringify(n)
 

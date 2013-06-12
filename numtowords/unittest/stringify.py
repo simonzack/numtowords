@@ -82,13 +82,13 @@ class TestPosIntBaseEngStringifier(unittest.TestCase):
 			3000012:		'millinillitrillion',
 		}
 		for key,val in baseStrs.items():
-			self.assertEquals(val,self.stringifier.stringify(key))
+			self.assertEqual(val,self.stringifier.stringify(key))
 
 		with self.assertRaises(ValueError):
 			self.stringifier.stringify(0)
 
 	def testGetPrefixBase(self):
-		self.assertEquals('',self.stringifier._getPrefixFromBase(0))
+		self.assertEqual('',self.stringifier._getPrefixFromBase(0))
 
 
 class TestPosIntBaseMaxEngStringifier(unittest.TestCase):
@@ -96,8 +96,8 @@ class TestPosIntBaseMaxEngStringifier(unittest.TestCase):
 		self.stringifier=PosIntBaseMaxEngStringifier(9,useStandardPrefs=False)
 
 	def testStringifyBase(self):
-		self.assertEquals('million billion',self.stringifier.stringify(15))
-		self.assertEquals('billion billion',self.stringifier.stringify(18))
+		self.assertEqual('million billion',self.stringifier.stringify(15))
+		self.assertEqual('billion billion',self.stringifier.stringify(18))
 
 
 class TestPosIntEngStrinfier(unittest.TestCase):
@@ -173,7 +173,7 @@ class TestPosIntEngStrinfier(unittest.TestCase):
 			102000003:	'one hundred and two million, and three',
 		}
 		for n,s in numStrs.items():
-			self.assertEquals(s,self.stringifier.stringify(n))
+			self.assertEqual(s,self.stringifier.stringify(n))
 
 		with self.assertRaises(ValueError):
 			self.stringifier.stringify(0)
@@ -184,11 +184,11 @@ class TestIntEngStrinfier(unittest.TestCase):
 		self.baseStringifier=PosIntBaseEngStringifier(useStandardPrefs=False)
 		self.stringifier=IntEngStringifier(self.baseStringifier,british=True)
 
-	def stringify(self,n):
+	def testStringify(self):
 		numStrs={
 			0:			'zero',
 			-25:		'negative twenty-five',
 		}
 		for n,s in numStrs.items():
-			self.assertEquals(s,self.stringifier.stringify(n))
+			self.assertEqual(s,self.stringifier.stringify(n))
 
