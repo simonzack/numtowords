@@ -4,8 +4,9 @@ class NumBaseEngStringifier:
 	for larger powers the naming used is the one by John Horton Conway/Richard Kenneth Guy/Allan Wechsler,
 		an extension of the standard dictionary numbers (see wikipedia)
 
-	this system is designed to represent 10**n
-		the power, n, is divided by 3 (since the usual bases, thousand, million, billion go up in powers of 3)
+	this system is designed to represent 10**n, starting from 10**6
+		it does not start from 'thousand' since the usual bases all end with 'illion'
+		the power, n, is divided by 3 (since the usual bases, million, billion go up in powers of 3)
 		the power is then split up into chunks of 3 digits
 	each chunk is then split into units, tens, hundreds:
 		a reverse prefix order is used: units, tens, hundreds
