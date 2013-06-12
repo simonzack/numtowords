@@ -284,3 +284,17 @@ class PosIntEngStringifier:
 			return ', '.join(reversed(res))
 		else:
 			return ' '.join(reversed(res))
+
+
+class IntEngStringifier(PosIntEngStringifier):
+	zero='zero'
+	negative='negative'
+
+	def stringify(self,n):
+		if n==0:
+			return self.zero
+		elif n<0:
+			return self.negative+super().stringify(n)
+		else:
+			return super().stringify(n)
+

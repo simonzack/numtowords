@@ -178,3 +178,17 @@ class TestPosIntEngStrinfier(unittest.TestCase):
 		with self.assertRaises(ValueError):
 			self.stringifier.stringify(0)
 
+
+class TestIntEngStrinfier(unittest.TestCase):
+	def setUp(self):
+		self.baseStringifier=PosIntBaseEngStringifier(useStandardPrefs=False)
+		self.stringifier=IntEngStringifier(self.baseStringifier,british=True)
+
+	def stringify(self,n):
+		numStrs={
+			0:			'zero',
+			-25:		'negative twenty-five',
+		}
+		for n,s in numStrs.items():
+			self.assertEquals(s,self.stringifier.stringify(n))
+
