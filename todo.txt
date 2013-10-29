@@ -1,0 +1,3 @@
+
+have git put the build version in setup.py automatically
+upload to pypi
