@@ -1,6 +1,8 @@
 
 class PosIntBaseEngStringifier:
     '''
+    # Naming Scheme
+
     For larger powers the naming used is the one by John Horton Conway/Richard
     Kenneth Guy/Allan Wechsler, an extension of the standard dictionary
     numbers (see wikipedia).
@@ -23,7 +25,7 @@ class PosIntBaseEngStringifier:
     All the chunks are then concacted together, from the highest power to the
     lowest power.
 
-    Alternative naming schemes:
+    # Alternative Naming Schemes
 
     [Landon Curt Noll](http://www.isthe.com/chongo/tech/math/number/howhigh.html)
     '''
