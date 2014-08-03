@@ -1,7 +1,7 @@
 
 # Numtowords
 
-Converts arbitrarily large intgers to English words, using the [John Horton
+Converts arbitrarily large integers to English words, using the [John Horton
 Conway/Richard Kenneth Guy/Allan Wechsler](https://en.wikipedia.org/wiki/Names_of_large_numbers) extension system.
 
 A binary is provided. The library's interface is rather simple to use, see unit tests for examples.
