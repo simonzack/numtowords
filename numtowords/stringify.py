@@ -1,24 +1,31 @@
 
 class PosIntBaseEngStringifier:
     '''
-    for larger powers the naming used is the one by John Horton Conway/Richard Kenneth Guy/Allan Wechsler,
-        an extension of the standard dictionary numbers (see wikipedia)
+    For larger powers the naming used is the one by John Horton Conway/Richard
+    Kenneth Guy/Allan Wechsler, an extension of the standard dictionary
+    numbers (see wikipedia).
 
-    this system is designed to represent 10**n, starting from 10**6
-        it does not start from 'thousand' since the usual bases all end with 'illion'
-        the power, n, is divided by 3 (since the usual bases, million, billion go up in powers of 3)
-        the power is then split up into chunks of 3 digits
-    each chunk is then split into units, tens, hundreds:
-        a reverse prefix order is used: units, tens, hundreds
-        when preceding a component marked s or x, "tre" increases to "tres" and "se" to "ses" or "sex"
-        when preceding a component marked m or n, "septe" and "nove" increase to "septem" and "novem" or "septen" and "noven"
-        e.g. tre-viginti becomes tre-s-viginti, as 's' and 'ms' share 's'
-    if a chunk is 0, then a placeholder, 'nilli' is used
-    all the chunks are then concacted together, from the highest power to the lowest power
+    This system is designed to represent 10**n, starting from 10**6. It does
+    not start from 'thousand' since the usual bases all end with 'illion'. The
+    power, n, is divided by 3 (since the usual bases, million, billion go up
+    in powers of 3). The power is then split up into chunks of 3 digits.
 
-    alternative naming schemes:
-        Landon Curt Noll:
-            http://www.isthe.com/chongo/tech/math/number/howhigh.html
+    Each chunk is then split into units, tens, hundreds:
+
+    - A reverse prefix order is used: units, tens, hundreds.
+    - When preceding a component marked s or x, "tre" increases to "tres" and
+      "se" to "ses" or "sex".
+    - When preceding a component marked m or n, "septe" and "nove" increase to
+      "septem" and "novem" or "septen" and "noven". e.g. tre-viginti becomes
+      tre-s-viginti, as 's' and 'ms' share 's'
+    - If a chunk is 0, then a placeholder, 'nilli' is used.
+
+    All the chunks are then concacted together, from the highest power to the
+    lowest power.
+
+    Alternative naming schemes:
+
+    [Landon Curt Noll](http://www.isthe.com/chongo/tech/math/number/howhigh.html)
     '''
 
     def __init__(self, use_standard_prefs=True):
@@ -26,10 +33,11 @@ class PosIntBaseEngStringifier:
 
     thousand = 'thousand'
 
-    #only used for powers 6-33 (i.e. the smallest) for every 3000 increase in power
+    # only used for powers 6-33 (i.e. the smallest) for every 3000 increase in
+    # power
     small_prefixes = ['', 'mi', 'bi', 'tri', 'quadri', 'quinti', 'sexti', 'septi', 'octi', 'noni', 'deci']
 
-    #dictionary definitions which might have conflicts with the naming system
+    # dictionary definitions which might have conflicts with the naming system
     standard_prefixes = {
         48:     'quindeci',
         51:     'sexdeci',
@@ -41,7 +49,7 @@ class PosIntBaseEngStringifier:
 
     placeholder_infix = 'ni'
 
-    #the second tuple elements are the rules
+    # the second tuple elements are the rules
     units = [
         '',
         'un',
@@ -83,7 +91,8 @@ class PosIntBaseEngStringifier:
 
     @staticmethod
     def _power_to_base_num(power):
-        #-1 since the smallest prefix is million, which is 10**6, and the largest prefix is decillion, whic his 10**33
+        # -1 since the smallest prefix is million, which is 10**6, and the
+        # largest prefix is decillion, whic his 10**33
         return power//3-1
 
     @staticmethod
@@ -93,7 +102,8 @@ class PosIntBaseEngStringifier:
     @staticmethod
     def _get_unit_suffix(unit_num, th_rule):
         '''
-        get the suffix of the unit, given the ten rule or hundred rule (if the ten rule is not present)
+        Get the suffix of the unit, given the ten rule or hundred rule (if the
+        ten rule is not present).
         '''
         if unit_num == 3 and ('s' in th_rule or 'x' in th_rule):
             return 's'
@@ -134,7 +144,7 @@ class PosIntBaseEngStringifier:
             elif hundred_rule:
                 unit_prefix += self._get_unit_suffix(unit_num, hundred_rule)
             res = unit_prefix + ten_prefix + hundred_prefix
-        #change 'a' to 'i' if res ends with 'a'
+        # change 'a' to 'i' if res ends with 'a'
         return prefix+res[:-1]+self.infix
 
     def _get_prefix_from_power(self, power):
@@ -157,8 +167,8 @@ class PosIntBaseMaxEngStringifier(PosIntBaseEngStringifier):
         '''
         args:
             max_power:
-                maximum power word representation used, e.g. if max_power==9,
-                    'billion billion' will be used instead to represent 10**18,
+                Maximum power word representation used, e.g. if max_power==9,
+                'billion billion' will be used instead to represent 10**18.
         '''
         if not self.is_power_valid(max_power) or max_power == 0:
             raise ValueError('max_power')
@@ -181,13 +191,17 @@ class PosIntBaseMaxEngStringifier(PosIntBaseEngStringifier):
 
 class PosIntEngStringifier:
     '''
-    use of 'and':
-        american english does not use 'and' anywhere (see wikitionary)
-        nobody does this, but not enforcing this also might introduces ambiguity which isn't resolved
+    # Use of 'and'
+
+    American english does not use 'and' anywhere (see wikitionary). Nobody
+    does this, but not enforcing this also might introduces ambiguity which
+    isn't resolved.
     '''
 
     units = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
-    ten_units = ['ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen']
+    ten_units = [
+        'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'
+    ]
     tens = ['', 'ten', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety']
     hundred = 'hundred'
     thousand = 'thousand'
@@ -228,21 +242,29 @@ class PosIntEngStringifier:
 
     def stringify(self, n):
         '''
-        algorithm (british):
-            stringify is done in base 1000, call each digit in base 1000 a block
-            for each block, an 'and' is inserted if the coefficient of 10 is 0
-                e.g. 'one hundred and two'
-            each block is stringified by concatenating the digit and the power
-                e.g. 'one hundred and two', 'million'
-            blocks with 0-value are skipped
-            if there's more than 1 block, and the last block has no 'and', then an 'and' is inserted before the last block
-                e.g. 'one million and two'
-            if the last block has an 'and' prefix, and the second last non-zero block has an 'and'
-                then a comma is inserted before the last block's 'and'
-                e.g. 'one hundred and two thousand, and three', but not 'one hundred and two thousand, one hundred and one'
+        # Algorithm (british)
 
-        algorithm (american):
-            this is just the algorithm for british nuemrals being stripped of 'and's
+        Stringify is done in base 1000, call each digit in base 1000 a block.
+        
+        For each block, an 'and' is inserted if the coefficient of 10 is 0,
+        e.g. 'one hundred and two'.
+
+        Each block is stringified by concatenating the digit and the power,
+        e.g. 'one hundred and two', 'million'. Blocks with 0-value are
+        skipped.
+
+        If there's more than 1 block, and the last block has no 'and', then an
+        'and' is inserted before the last block, e.g. 'one million and two'.
+
+        If the last block has an 'and' prefix, and the second last non-zero
+        block has an 'and', then a comma is inserted before the last block's
+        'and', e.g. 'one hundred and two thousand, and three', but not 'one
+        hundred and two thousand, one hundred and one'.
+
+        # Algorithm (american)
+        
+        This is just the algorithm for british nuemrals being stripped of
+        'and's.
         '''
         if not self.is_n_valid(n):
             raise ValueError('n')
@@ -259,10 +281,10 @@ class PosIntEngStringifier:
             if rem != 0:
                 if len(block_coeffs_non_zero) < 2:
                     block_coeffs_non_zero.append(rem)
-                #stringify the digit in base 1000
+                # stringify the digit in base 1000
                 block_res.append(self._string_block_coeff(rem))
                 if cur_pow > 0:
-                    #concatenate power
+                    # concatenate power
                     block_res.append(self.num_base_stringifier.stringify(cur_pow))
                 res.append(' '.join(block_res))
             if quot == 0:
@@ -271,12 +293,13 @@ class PosIntEngStringifier:
             cur_pow += 3
         if self.british:
             try:
-                #there's more than 1 block, and the last block has no 'and'
+                # there's more than 1 block, and the last block has no 'and'
                 if 0 < block_coeffs[0] < 100 and block_coeffs[1] is not None:
                     res[0] = self.infix + ' ' + res[0]
                     if self.commas:
-                        #the last block has an 'and' prefix, and the second last non-zero block has an 'and'
-                        #remove the comma by merging
+                        # the last block has an 'and' prefix, and the second
+                        # last non-zero block has an 'and' remove the comma by
+                        # merging
                         if 0 < block_coeffs[0] < 100 and 0 < block_coeffs_non_zero[1] < 100:
                             res0 = res.pop(0)
                             res1 = res.pop(0)
