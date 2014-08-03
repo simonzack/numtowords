@@ -26,10 +26,10 @@ A binary is provided. The library's interface is rather simple to use, see unit 
 
 <!-- -->
 
-    >main.py 1000000000000000000000000000000000000000000000000
+    $ main.py 1000000000000000000000000000000000000000000000000
     one quinquadecillion
 
 <!-- -->
 
-    > main.py --basestandardprefs 1000000000000000000000000000000000000000000000000
+    $ main.py --basestandardprefs 1000000000000000000000000000000000000000000000000
     one quindecillion
