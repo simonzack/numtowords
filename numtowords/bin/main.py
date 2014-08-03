@@ -1,6 +1,6 @@
 
 '''
-Convert number to English words
+Convert number to English words.
 '''
 
 import argparse
