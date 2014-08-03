@@ -1,2 +1,2 @@
 
-import stringify
+import numtowords.stringify as stringify
