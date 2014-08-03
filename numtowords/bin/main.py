@@ -11,9 +11,9 @@ def main():
     arg_parser = argparse.ArgumentParser(description=__doc__)
     arg_parser.add_argument('nums', type=int, nargs='+')
     arg_parser.add_argument('--format', choices=['american', 'british'], default='british')
-    arg_parser.add_argument('--basemaxpower', default=None)
-    arg_parser.add_argument('--basestandardprefs', default=None)
-    arg_parser.add_argument('--commas', default=True)
+    arg_parser.add_argument('--basemaxpower', type=int, default=None)
+    arg_parser.add_argument('--basestandardprefs', action='store_true')
+    arg_parser.add_argument('--nocommas', action='store_true')
     args = arg_parser.parse_args()
 
     if args.basemaxpower is None:
@@ -29,7 +29,7 @@ def main():
     stringifier = IntEngStringifier(
         base_stringifier,
         british=(args.format == 'british'),
-        commas=args.commas
+        commas=not args.nocommas
     )
 
     for n in args.nums:
